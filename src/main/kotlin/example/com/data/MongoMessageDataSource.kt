@@ -15,4 +15,9 @@ class MongoMessageDataSource(db:MongoDatabase) : MessageDataSource{
     override suspend fun InsertMessage(message: Message) {
         messages.insertOne(message)
     }
+
+    override suspend fun deleteMessage(id: String) {
+        val filter = Document("id", id)
+        messages.deleteOne(filter)
+    }
 }
