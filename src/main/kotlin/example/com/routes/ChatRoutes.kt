@@ -1,6 +1,7 @@
 package example.com.routes
 
 import example.com.data.model.Message
+import example.com.data.model.MessageDto
 import example.com.room.RoomController
 import example.com.session.ChatSession
 import io.ktor.http.*
@@ -38,17 +39,43 @@ fun Route.chatSocket(roomController: RoomController){
     }
 }
 
-fun Route.editMessage(roomController: RoomController){
-    put("/edit-message"){
-        val updatedMessage = try {
-            call.receive<Message>()
+fun Route.editMessage(roomController: RoomController) {
+    put("/edit_message") {
+        println("Edit message route hit")
+
+        val headers = call.request.headers
+        println("Request Headers: $headers")
+
+        val contentType = call.request.contentType()
+        println("Request Content-Type: $contentType")
+
+        val updatedMessageDto = try {
+            val messageDto = call.receive<MessageDto>()
+            println("Received message DTO: $messageDto")
+            messageDto
         } catch (e: Exception) {
+            println("Failed to parse request body: ${e.localizedMessage}")
             return@put call.respond(HttpStatusCode.BadRequest, "Invalid message format")
         }
-        roomController.editMessage(updatedMessage)
-        call.respond(HttpStatusCode.OK, "Message edited successfully")
+
+        val updatedMessage = updatedMessageDto.toMessage()
+        println("Parsed message: $updatedMessage")
+
+        try {
+            roomController.editMessage(updatedMessage)
+            println("Message successfully edited in RoomController")
+            call.respond(HttpStatusCode.OK, "Message edited successfully")
+        } catch (e: Exception) {
+            println("Error while editing message: ${e.localizedMessage}")
+            call.respond(HttpStatusCode.InternalServerError, "Failed to edit message")
+        }
     }
 }
+
+
+
+
+
 
 fun Route.deleteMessage(roomController: RoomController) {
     delete("/delete_message/{id}") {

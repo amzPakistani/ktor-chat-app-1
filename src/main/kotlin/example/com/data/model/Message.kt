@@ -8,6 +8,5 @@ data class Message(
     val username:String,
     val timeStamp:Long,
     val message: String,
-    val id:String = ObjectId().toString(),
-    val edited:Boolean = false
+    val id:String = ObjectId().toString()
 )
