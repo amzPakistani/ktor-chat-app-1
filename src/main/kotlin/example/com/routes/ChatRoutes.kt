@@ -37,7 +37,7 @@ fun Route.chatSocket(roomController: RoomController){
 }
 
 fun Route.deleteMessage(roomController: RoomController) {
-    delete("/message/delete/{id}") {
+    delete("/delete_message/{id}") {
         val id = call.parameters["id"] ?: return@delete call.respond(HttpStatusCode.BadRequest, "Missing id")
         roomController.deleteMessage(id)
         call.respond(HttpStatusCode.OK, "Message deleted successfully")

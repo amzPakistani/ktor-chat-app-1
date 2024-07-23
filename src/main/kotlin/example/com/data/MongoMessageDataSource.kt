@@ -4,6 +4,7 @@ import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import example.com.data.model.Message
 import kotlinx.coroutines.flow.toList
 import org.bson.Document
+import org.bson.types.ObjectId
 
 class MongoMessageDataSource(db:MongoDatabase) : MessageDataSource{
 
@@ -17,7 +18,14 @@ class MongoMessageDataSource(db:MongoDatabase) : MessageDataSource{
     }
 
     override suspend fun deleteMessage(id: String) {
-        val filter = Document("id", id)
-        messages.deleteOne(filter)
+        val filter = Document("id", id) // Use the custom 'id' field
+
+        // Proceed with deletion
+        val result = messages.deleteOne(filter)
+        if (result.deletedCount == 0L) {
+            println("No document found with id: $id")
+        } else {
+            println("Document with id: $id deleted successfully")
+        }
     }
 }
