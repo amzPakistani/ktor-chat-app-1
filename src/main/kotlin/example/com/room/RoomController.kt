@@ -39,6 +39,10 @@ class RoomController(private val messageDataSource: MessageDataSource) {
         messageDataSource.deleteMessage(id)
     }
 
+    suspend fun editMessage(message: Message){
+        messageDataSource.editMessage(message)
+    }
+
     suspend fun getAllMessages():List<Message>{
         return messageDataSource.getAllMessages()
     }

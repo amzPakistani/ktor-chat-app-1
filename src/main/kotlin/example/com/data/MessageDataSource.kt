@@ -6,4 +6,5 @@ interface MessageDataSource {
     suspend fun getAllMessages():List<Message>
     suspend fun InsertMessage(message: Message)
     suspend fun deleteMessage(id:String)
+    suspend fun editMessage(message: Message)
 }

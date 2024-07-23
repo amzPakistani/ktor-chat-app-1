@@ -1,9 +1,11 @@
 package example.com.routes
 
+import example.com.data.model.Message
 import example.com.room.RoomController
 import example.com.session.ChatSession
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
@@ -33,6 +35,18 @@ fun Route.chatSocket(roomController: RoomController){
                 roomController.tryDisconnect(username = session.username)
             }
         }
+    }
+}
+
+fun Route.editMessage(roomController: RoomController){
+    put("/edit-message"){
+        val updatedMessage = try {
+            call.receive<Message>()
+        } catch (e: Exception) {
+            return@put call.respond(HttpStatusCode.BadRequest, "Invalid message format")
+        }
+        roomController.editMessage(updatedMessage)
+        call.respond(HttpStatusCode.OK, "Message edited successfully")
     }
 }
 
