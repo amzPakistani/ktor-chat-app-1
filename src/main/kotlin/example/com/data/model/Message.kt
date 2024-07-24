@@ -9,5 +9,7 @@ data class Message(
     val timeStamp:Long,
     val message: String,
     val id:String = ObjectId().toString(),
-    val edited:Boolean? = null
+    val edited:Boolean? = null,
+    val action: String? = null
+
 )

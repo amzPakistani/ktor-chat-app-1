@@ -37,11 +37,28 @@ class RoomController(private val messageDataSource: MessageDataSource) {
 
     suspend fun deleteMessage(id: String) {
         messageDataSource.deleteMessage(id)
+        broadcastDeletion(id)
     }
 
-    suspend fun editMessage(message: Message){
-        messageDataSource.editMessage(message)
+    private suspend fun broadcastDeletion(id: String) {
+        val deletionMessage = Json.encodeToString(mapOf("action" to "delete", "id" to id))
+        members.values.forEach { member ->
+            member.socketSession.send(Frame.Text(deletionMessage))
+        }
     }
+
+    suspend fun editMessage(message: Message) {
+        messageDataSource.editMessage(message)
+        broadcastEdit(message)
+    }
+
+    private suspend fun broadcastEdit(message: Message) {
+        val editedMessage = Json.encodeToString(message)
+        members.values.forEach { member ->
+            member.socketSession.send(Frame.Text(editedMessage))
+        }
+    }
+
 
     suspend fun getAllMessages():List<Message>{
         return messageDataSource.getAllMessages()
